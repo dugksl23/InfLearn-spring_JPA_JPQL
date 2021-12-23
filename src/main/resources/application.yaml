@@ -1,0 +1,36 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+    open-in-view: true
+
+  devtools:
+    livereload:
+      enabled: true
+  freemarker:
+    cache: false
+  main:
+    allow-bean-definition-overriding: true
+  h2:
+    console:
+      enabled: true
+      path: /h2_db
+  datasource:
+    url: jdbc:h2:../test
+    #    url: jdbc:h2:mem:h2db;
+    #    url: jdbc:h2:file:~/db/h2;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE;
+    driver-class-name: org.h2.Driver
+    username: user
+    password: 1234
+
+
+  properties:
+    hibernate:
+      default_batch_fetch_size: 100
+
+
+server:
+  port: 80
