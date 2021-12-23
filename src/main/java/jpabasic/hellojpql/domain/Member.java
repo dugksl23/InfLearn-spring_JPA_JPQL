@@ -1,7 +1,6 @@
 package jpabasic.hellojpql.domain;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +12,12 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class Member {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "member_id", nullable = false)
     private Long id;
     private String name;
+    private Integer age;
 
     @ManyToOne
     @JoinColumn(name = "team_id")
@@ -24,15 +25,16 @@ public class Member {
 
     @OneToMany
     @JoinColumn(name = "member_id")
-    private List<Order> orders ;
+    private List<Order> orders;
 
 
     @Builder
-    public Member(String name) {
+    public Member(String name, Integer age) {
         this.name = name;
+        this.age = age;
     }
 
-    public void entryTeam(Team team){
+    public void entryTeam(Team team) {
         this.team = team;
         team.getMembers().add(this);
     }
