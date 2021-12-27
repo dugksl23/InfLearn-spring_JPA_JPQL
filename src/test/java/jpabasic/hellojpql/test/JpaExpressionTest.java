@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.EntityManager;
@@ -205,7 +206,8 @@ public class JpaExpressionTest {
     }
 
     @Test
-//    @Transactional
+    @Rollback(value = false)
+    @Transactional
     void manyToOneJoinFetchTest() {
 
         Team team1 = Team.builder().name("team1").build();
@@ -219,7 +221,7 @@ public class JpaExpressionTest {
         member2.setName("member2");
         member2.entryTeam(team1);
 
-        memberRepository.saveAll(Arrays.asList(member1, member2));
+        List<Member> members = memberRepository.saveAll(Arrays.asList(member1, member2));
 
         Team team2 = Team.builder().name("team2").build();
         teamRepository.save(team2);
@@ -229,14 +231,40 @@ public class JpaExpressionTest {
         member3.entryTeam(team2);
         memberRepository.save(member3);
 
-        List<Member> all = memberRepository.findAll();
+    }
 
+    @Test
+    @Rollback(value = false)
+    @Transactional
+    void findMember() {
+
+        // N + 1,
+        // Member Query - 1회,
+        // Team Query   - Member 와 연관관계를 맺은 Team 의 갯수만큼 query
+
+        List<Member> all = em.createQuery("select m from Member m").getResultList();
         for (Member member : all) {
             System.out.println("member3 = " + member.getName() + ", team name = " + member.getTeam().getName());
         }
-        // N + 1, Member Query 1회, Team Query x Member count
 
+
+//        List<Member> all = memberRepository.findAll();
+//        all.stream().forEach(member -> System.out.println("member = " + member.getName() + ", team = " + member.getTeam().getName()));
+    }
+
+    @Test
+    @Rollback(value = false)
+    @Transactional
+    void findMemberWithJoinFetch() {
+
+        List<Member> all = em.createQuery("select m from Member m join fetch m.team").getResultList();
+        for (Member member : all) {
+            System.out.println("member3 = " + member.getName() + ", team name = " + member.getTeam().getName());
+        }
 
     }
+
+
+
 
 }
