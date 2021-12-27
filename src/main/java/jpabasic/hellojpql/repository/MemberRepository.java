@@ -33,7 +33,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 
     /**
-     * 1. 묵시적 join 문법(간접)
+     * 1. 엔티티 프로젝션 - 묵시적 join 문법(간접)
      *
      * @Return Team
      * m.team 의 select 는 곧 join 하여 값을 불러오겠다는 것이다.
@@ -44,7 +44,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
 
     /**
-     * 2. 명시적 join 문법(직접)
+     * 2. 엔티티 프로젝션 - 명시적 join 문법(직접)
      *
      * @Return Team
      * 조인이 필요하다면, 직관적으로 join 과 함께 사용해야 한다.
