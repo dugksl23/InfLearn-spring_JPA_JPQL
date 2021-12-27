@@ -73,5 +73,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Query(value = "select new jpabasic.hellojpql.dto.MemberDto(m.id, m.age) from Member as m where m.id = :id")
     public MemberDto findMemberWithNewDto(@Param("id") Long id);
 
+
+    @Query("select m from Member m left outer join m.team order by m.id desc")
+    public List<Member> findMembersJoinTeam();
 }
 

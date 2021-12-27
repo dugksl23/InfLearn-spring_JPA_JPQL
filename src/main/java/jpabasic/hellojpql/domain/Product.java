@@ -3,11 +3,14 @@ package jpabasic.hellojpql.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Getter
 @Entity
+@Setter
 @NoArgsConstructor
 public class Product {
     @Id @GeneratedValue(strategy = GenerationType.AUTO)

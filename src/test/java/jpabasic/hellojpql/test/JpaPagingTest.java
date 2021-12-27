@@ -38,7 +38,7 @@ public class JpaPagingTest {
             Member member = new Member();
             member.setAge(i);
             member.setName("member" + i);
-            member.setTeam(team1);
+            member.entryTeam(team1);
             memberRepository.save(member);
         }
 
@@ -53,6 +53,8 @@ public class JpaPagingTest {
         });
 
     }
+
+
 
 
 }
