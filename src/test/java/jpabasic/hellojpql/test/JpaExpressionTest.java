@@ -14,9 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Transient;
 import javax.transaction.Transactional;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 @SpringBootTest
@@ -182,7 +182,27 @@ public class JpaExpressionTest {
         integer = integers.get(0);
         System.out.println(integer); // 0반환
 
-
     }
+
+
+    @Test
+    void selectCollectionValueGraph() {
+
+
+        Team team = Team.builder().name("ddd").build();
+        teamRepository.save(team);
+
+        Member member = new Member();
+        member.setName("dd");
+        member.entryTeam(team);
+        memberRepository.save(member);
+
+        Collection resultList1 = em.createQuery("select t.members from Team t").getResultList();
+        resultList1.stream().forEach(result -> {
+            Member member1 = (Member) result;
+            System.out.println("member : " + member1.getName());
+        });
+    }
+
 
 }
