@@ -204,5 +204,39 @@ public class JpaExpressionTest {
         });
     }
 
+    @Test
+//    @Transactional
+    void manyToOneJoinFetchTest() {
+
+        Team team1 = Team.builder().name("team1").build();
+        teamRepository.save(team1);
+
+        Member member1 = new Member();
+        member1.setName("member1");
+        member1.entryTeam(team1);
+
+        Member member2 = new Member();
+        member2.setName("member2");
+        member2.entryTeam(team1);
+
+        memberRepository.saveAll(Arrays.asList(member1, member2));
+
+        Team team2 = Team.builder().name("team2").build();
+        teamRepository.save(team2);
+
+        Member member3 = new Member();
+        member3.setName("member3");
+        member3.entryTeam(team2);
+        memberRepository.save(member3);
+
+        List<Member> all = memberRepository.findAll();
+
+        for (Member member : all) {
+            System.out.println("member3 = " + member.getName() + ", team name = " + member.getTeam().getName());
+        }
+        // N + 1, Member Query 1회, Team Query x Member count
+
+
+    }
 
 }
