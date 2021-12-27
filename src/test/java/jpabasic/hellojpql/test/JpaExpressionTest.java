@@ -14,6 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Transient;
+import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
@@ -107,10 +109,80 @@ public class JpaExpressionTest {
          * 2. nullIf(A,B)
          * @return A와 B가 같으면, Null 반환. 다르면 첫번째 값을 반환
          */
+
+        String query = "select nullif(m.name, 'ADMIN') from Member m";
+        String query2 = "select m from Member m";
         List<String> resultList2 = em.createQuery("select nullif(m.name, 'ADMIN') from Member m").getResultList();
         resultList2.stream().forEach(member2 -> {
             System.out.println("member type : " + member2);
         });
 
     }
+
+    @Test
+    @Transactional
+    void jpqlFunctionTest() {
+
+        Member member = new Member();
+        member.setMemberType(MemberType.USER);
+        member.setName("ADMIN");
+
+        Member member1 = new Member();
+        member.setName("111");
+        member.setMemberType(MemberType.ADMIN);
+        memberRepository.saveAll(Arrays.asList(member1, member));
+
+
+        /**
+         * 1. concat(A,B,C, etc...)
+         * @return 매개변수로 등록된 문자들을 더한 값을 반환
+         */
+        String query = "select concat('a','b', 'ㅇ') from Member m";
+        List<String> resultList = em.createQuery(query).getResultList();
+        String objects = resultList.get(0);
+        System.out.println(objects);
+
+        /**
+         * 2. substring('abcd', 1,2) -> return 'ab'
+         * @return A의 문자에 대하여, b와 c 까지의 문자열만 반환
+         */
+        query = "select substring('abcdefd', 1, 2) from Member m";
+        resultList = em.createQuery(query).getResultList();
+        objects = resultList.get(0);
+        System.out.println(objects);
+
+        /**
+         * 3. length('abcd') -> 4
+         * @return A의 문자에 대한 길이를 Integer로 반환
+         */
+        query = "select LENGTH('abcdefd') from Member m";
+        List<Integer> integers = em.createQuery(query).getResultList();
+        Integer integer = integers.get(0);
+        System.out.println(integer);
+
+        /**
+         * 4. locate('b에 대한 검색할 문자','abcdㄹㄷ') ->  2
+         * @return A의 문자에 대하여, b에 검색할 문자를 지정하고,
+         *         검색 문자의 시작하는 위치값을 Integer로 반환
+         */
+        query = "select locate('b', 'abcdefd') from Member m";
+        integers = em.createQuery(query).getResultList();
+        integer = integers.get(0);
+        System.out.println(integer);
+
+        /**
+         * 5. size(a,member)
+         * @return 연관관계를 맺은 List 타입의 size를 Integer 반환
+         * @Warning OneToMany에서 List<?>를 가진 Type에서만 조회 가능
+         */
+        Team team = Team.builder().name("ddd").build();
+        teamRepository.save(team);
+        query = "select size(t.members) from Team t";
+        integers = em.createQuery(query).getResultList();
+        integer = integers.get(0);
+        System.out.println(integer); // 0반환
+
+
+    }
+
 }
