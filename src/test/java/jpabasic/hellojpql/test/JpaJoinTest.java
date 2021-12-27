@@ -1,9 +1,8 @@
 package jpabasic.hellojpql.test;
 
 
-import jpabasic.hellojpql.domain.Member;
-import jpabasic.hellojpql.domain.Product;
-import jpabasic.hellojpql.domain.Team;
+import jpabasic.hellojpql.domain.*;
+import jpabasic.hellojpql.repository.BookRepository;
 import jpabasic.hellojpql.repository.MemberRepository;
 import jpabasic.hellojpql.repository.ProductRepository;
 import jpabasic.hellojpql.repository.TeamRepository;
@@ -15,7 +14,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +28,8 @@ public class JpaJoinTest {
     private TeamRepository teamRepository;
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -225,5 +225,53 @@ public class JpaJoinTest {
         });
 
     }
+
+    @Test
+    void typeExpressionTest() {
+
+        Team team1 = Team.builder().name("team1").build();
+        teamRepository.save(team1);
+        for (int i = 0; i < 10; i++) {
+            Member member = new Member();
+            member.setAge(i);
+            member.setName("team" + i);
+            member.setMemberType(MemberType.ADMIN);
+
+            member.entryTeam(team1); //객체 연관관계 매핑 ( ORM)
+            memberRepository.save(member); // DB 연관관계 매핑 (RDB)
+        }
+
+        // Enum 풀 패키지 경로
+        List<Object[]> list = em.createQuery("select m.memberType, 'hello', 10, 10l, 10F, 10D,true from Member m where m.memberType = jpabasic.hellojpql.domain.MemberType.ADMIN").getResultList();
+        Object[] objects = list.get(0);
+        Arrays.stream(objects).forEach(System.out::println);
+
+        // Enum 이름 기반
+        List<Object[]> list2 = em.createQuery("select m.memberType, 'hello', 10, 10l, 10F, 10D, true from Member m where m.memberType = :type")
+                .setParameter("type", MemberType.ADMIN)
+                .getResultList();
+
+
+    }
+
+    @Test
+    void typeExpressionWithEntity상속관계Test() {
+
+
+        Book book = new Book();
+        book.setName("ddd");
+        // 상속관계용 Book SAVE
+        Item save = bookRepository.save(book);
+        System.out.println("name " + save.getName());
+
+        List<Item> resultList = em.createQuery("select i from Item i where type(i) = jpabasic.hellojpql.domain.Book", Item.class).getResultList();
+        resultList.stream().forEach(result -> {
+            Book book1 = (Book) result;
+            System.out.println(book1.getId());
+            System.out.println(book1.getName());
+        });
+
+    }
+
 
 }

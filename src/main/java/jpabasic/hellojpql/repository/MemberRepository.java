@@ -67,6 +67,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     /**
      * 4. Dto 를 통한 new 명령 조회
+     *
      * @Return MemberDto
      * 해당 Dto의 패키지 full 경로 입력해야 한다.
      */
@@ -76,5 +77,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("select m from Member m left outer join m.team order by m.id desc")
     public List<Member> findMembersJoinTeam();
+
+
 }
 

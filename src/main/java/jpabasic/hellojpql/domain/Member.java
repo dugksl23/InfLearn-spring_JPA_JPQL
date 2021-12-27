@@ -21,6 +21,9 @@ public class Member {
     private String name;
     private Integer age;
 
+    @Enumerated(EnumType.STRING)
+    private MemberType memberType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team;
@@ -28,6 +31,7 @@ public class Member {
     @OneToMany
     @JoinColumn(name = "member_id")
     private List<Order> orders;
+
 
 
     @Builder
