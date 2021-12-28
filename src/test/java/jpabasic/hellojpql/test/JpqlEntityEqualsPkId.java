@@ -25,16 +25,18 @@ import java.util.Optional;
 @Slf4j
 public class JpqlEntityEqualsPkId {
 
+    @Autowired
     private MemberRepository memberRepository;
+    @Autowired
     private TeamRepository teamRepository;
     @PersistenceContext
     private EntityManager em;
 
-    @Autowired
-    void init(MemberRepository memberRepository, TeamRepository teamRepository) {
-        this.memberRepository = memberRepository;
-        this.teamRepository = teamRepository;
-    }
+//    @Autowired
+//    void init(MemberRepository memberRepository, TeamRepository teamRepository) {
+//        this.memberRepository = memberRepository;
+//        this.teamRepository = teamRepository;
+//    }
 
 
     @BeforeEach
@@ -56,6 +58,9 @@ public class JpqlEntityEqualsPkId {
     }
 
 
+      /**
+     * 3. Entity 를 파라미터로 전달.
+     */
     @Test
     @Transactional
     void fkEntityType() {
@@ -70,6 +75,9 @@ public class JpqlEntityEqualsPkId {
         }
     }
 
+    /**
+     * 4. Entity 의 FK 를 파라미터로 전달.
+     */
     @Test
     @Transactional
     void fkEntityPKType() {
@@ -84,6 +92,9 @@ public class JpqlEntityEqualsPkId {
         }
     }
 
+    /**
+     * 1. Entity 를 파라미터로 전달.
+     */
     @Test
     @Transactional
     void pkEntityType() {
@@ -98,6 +109,11 @@ public class JpqlEntityEqualsPkId {
         }
     }
 
+
+
+    /**
+     * 2. Entity 의 PK 를 파라미터로 전달.
+     */
     @Test
     @Transactional
     void pkEntityPKType() {

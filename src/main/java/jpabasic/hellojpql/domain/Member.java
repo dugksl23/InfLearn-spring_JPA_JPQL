@@ -11,6 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @Setter
 @ToString
+@NamedQuery(name = "Member.findByTeam",
+        query = "select m from Member m where m.team = :team")
 public class Member {
     @Id
     @GeneratedValue
@@ -29,7 +31,6 @@ public class Member {
     @OneToMany
     @JoinColumn(name = "member_id")
     private List<Order> orders;
-
 
 
     @Builder

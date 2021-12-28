@@ -49,7 +49,7 @@ public class Team {
      * <p>
      *
      */
-    @BatchSize(size = 1)
+    @BatchSize(size = 10)
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private List<Member> members = new ArrayList<>();
 

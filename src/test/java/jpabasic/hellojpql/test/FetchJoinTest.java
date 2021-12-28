@@ -36,6 +36,10 @@ public class FetchJoinTest {
     @Rollback(value = false)
     void manyToOneJoinTest() {
 
+        /**
+         * team : team1
+         * member : member1, member2
+         */
         Team team1 = Team.builder().name("team1").build();
         teamRepository.save(team1);
 
@@ -49,13 +53,23 @@ public class FetchJoinTest {
 
         List<Member> members = memberRepository.saveAll(Arrays.asList(member1, member2));
 
+
+        /**
+         * team : team2
+         * member : member3, member4
+         */
         Team team2 = Team.builder().name("team2").build();
         teamRepository.save(team2);
 
         Member member3 = new Member();
         member3.setName("member3");
         member3.entryTeam(team2);
-        memberRepository.save(member3);
+
+        Member member4 = new Member();
+        member4.setName("member4");
+        member4.entryTeam(team2);
+
+        memberRepository.saveAll(Arrays.asList(member3, member4));
 
     }
 
@@ -64,12 +78,12 @@ public class FetchJoinTest {
     @Transactional
     void findTeamWithJoin() {
 
-        List<Team> all = em.createQuery("select t from Team t join t.members").getResultList();
+        List<Team> all = em.createQuery("select t from Team t").getResultList();
         System.out.println("all size : " + all.size());
         for (int i = 0; i < all.size(); i++) {
-            System.out.println("team name = " + all.get(i).getName() + ", member size :   = " + all.get(i).getMembers().size());
+            System.out.println("team name = " + all.get(i).getName() + ", member  :   = " + all.get(i).getMembers().size());
             for (int j = 0; j < all.get(i).getMembers().size(); j++) {
-                System.out.println("team name = " + all.get(i).getName() + ", member size :   = " + all.get(i).getMembers().get(j).getName());
+                System.out.println("team name = " + all.get(i).getName() + ", member name :   = " + all.get(i).getMembers().get(j).getName());
             }
         }
     }
@@ -84,7 +98,7 @@ public class FetchJoinTest {
         for (int i = 0; i < all.size(); i++) {
             System.out.println("team name = " + all.get(i).getName() + ", member size :   = " + all.get(i).getMembers().size());
             for (int j = 0; j < all.get(i).getMembers().size(); j++) {
-                System.out.println("team name = " + all.get(i).getName() + ", member size :   = " + all.get(i).getMembers().get(j).getName());
+                System.out.println("team name = " + all.get(i).getName() + ", member name :   = " + all.get(i).getMembers().get(j).getName());
             }
         }
 
