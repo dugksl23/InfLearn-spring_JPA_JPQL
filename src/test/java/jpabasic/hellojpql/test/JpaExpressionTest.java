@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.persistence.EntityManager;
@@ -75,6 +74,12 @@ public class JpaExpressionTest {
         Item save = bookRepository.save(book);
         System.out.println("name " + save.getName());
 
+        Book book3 = new Book();
+        book.setName("ddd");
+        // 상속관계용 Book SAVE
+        Item save1 = bookRepository.save(book3);
+        System.out.println("name " + save.getName());
+
         List<Item> resultList = em.createQuery("select i from Item i where type(i) = jpabasic.hellojpql.domain.Book", Item.class).getResultList();
         resultList.stream().forEach(result -> {
             Book book1 = (Book) result;
@@ -83,6 +88,33 @@ public class JpaExpressionTest {
         });
 
     }
+
+    @Test
+    void typeExpressionWithUniqueEntity상속관계Test() {
+
+        Book book = new Book();
+        book.setName("ddd");
+        // 상속관계용 Book SAVE
+        Item save = bookRepository.save(book);
+        System.out.println("name " + save.getName());
+
+        Book book3 = new Book();
+        book.setName("ddd");
+        // 상속관계용 Book SAVE
+        Item save1 = bookRepository.save(book3);
+        System.out.println("name " + save.getName());
+
+        List<Item> resultList = em.createQuery("select i from Item i where type(i) = Book and TREAT(i as Book).id = :bookId", Item.class)
+                .setParameter("bookId", save.getId())
+                .getResultList();
+        resultList.stream().forEach(result -> {
+            Book book1 = (Book) result;
+            System.out.println(book1.getId());
+            System.out.println(book1.getName());
+        });
+
+    }
+
 
     @Test
     @Transactional
