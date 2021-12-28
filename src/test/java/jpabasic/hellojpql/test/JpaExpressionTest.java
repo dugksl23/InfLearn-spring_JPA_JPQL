@@ -85,42 +85,6 @@ public class JpaExpressionTest {
     }
 
     @Test
-    void conditionExpressionTest() {
-
-        Member member = new Member();
-        member.setMemberType(MemberType.USER);
-        member.setName("ADMIN");
-
-        Member member1 = new Member();
-        member.setName("111");
-        member.setMemberType(MemberType.ADMIN);
-        memberRepository.saveAll(Arrays.asList(member1, member));
-
-
-        /**
-         * 1. coalesce()
-         * @return null 이 아닌 것들을 모두 반환, null 이면 지정된 default value 반환.
-         */
-        List<String> resultList1 = em.createQuery("select coalesce(m.name, '이름없는 회원') from Member m", String.class).getResultList();
-        resultList1.stream().forEach(member2 -> {
-            System.out.println("member name : " + member2);
-        });
-
-        /**
-         * 2. nullIf(A,B)
-         * @return A와 B가 같으면, Null 반환. 다르면 첫번째 값을 반환
-         */
-
-        String query = "select nullif(m.name, 'ADMIN') from Member m";
-        String query2 = "select m from Member m";
-        List<String> resultList2 = em.createQuery("select nullif(m.name, 'ADMIN') from Member m").getResultList();
-        resultList2.stream().forEach(member2 -> {
-            System.out.println("member type : " + member2);
-        });
-
-    }
-
-    @Test
     @Transactional
     void jpqlFunctionTest() {
 
@@ -204,67 +168,5 @@ public class JpaExpressionTest {
             System.out.println("member : " + member1.getName());
         });
     }
-
-    @Test
-    @Rollback(value = false)
-    @Transactional
-    void manyToOneJoinFetchTest() {
-
-        Team team1 = Team.builder().name("team1").build();
-        teamRepository.save(team1);
-
-        Member member1 = new Member();
-        member1.setName("member1");
-        member1.entryTeam(team1);
-
-        Member member2 = new Member();
-        member2.setName("member2");
-        member2.entryTeam(team1);
-
-        List<Member> members = memberRepository.saveAll(Arrays.asList(member1, member2));
-
-        Team team2 = Team.builder().name("team2").build();
-        teamRepository.save(team2);
-
-        Member member3 = new Member();
-        member3.setName("member3");
-        member3.entryTeam(team2);
-        memberRepository.save(member3);
-
-    }
-
-    @Test
-    @Rollback(value = false)
-    @Transactional
-    void findMember() {
-
-        // N + 1,
-        // Member Query - 1회,
-        // Team Query   - Member 와 연관관계를 맺은 Team 의 갯수만큼 query
-
-        List<Member> all = em.createQuery("select m from Member m").getResultList();
-        for (Member member : all) {
-            System.out.println("member3 = " + member.getName() + ", team name = " + member.getTeam().getName());
-        }
-
-
-//        List<Member> all = memberRepository.findAll();
-//        all.stream().forEach(member -> System.out.println("member = " + member.getName() + ", team = " + member.getTeam().getName()));
-    }
-
-    @Test
-    @Rollback(value = false)
-    @Transactional
-    void findMemberWithJoinFetch() {
-
-        List<Member> all = em.createQuery("select m from Member m join fetch m.team").getResultList();
-        for (Member member : all) {
-            System.out.println("member3 = " + member.getName() + ", team name = " + member.getTeam().getName());
-        }
-
-    }
-
-
-
 
 }
