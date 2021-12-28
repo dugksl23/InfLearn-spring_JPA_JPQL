@@ -4,6 +4,7 @@ import jpabasic.hellojpql.domain.Member;
 import jpabasic.hellojpql.domain.Team;
 import jpabasic.hellojpql.repository.MemberRepository;
 import jpabasic.hellojpql.repository.TeamRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class FetchJoinTest {
     @PersistenceContext
     private EntityManager em;
 
-    //    @BeforeEach
+    @BeforeEach
     @Rollback(value = false)
     void manyToOneJoinTest() {
 

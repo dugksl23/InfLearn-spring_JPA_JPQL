@@ -1,5 +1,8 @@
 spring:
   jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 100
     hibernate:
       ddl-auto: update
       naming:
@@ -25,12 +28,6 @@ spring:
     driver-class-name: org.h2.Driver
     username: user
     password: 1234
-
-
-  properties:
-    hibernate:
-      default_batch_fetch_size: 100
-
 
 server:
   port: 80
