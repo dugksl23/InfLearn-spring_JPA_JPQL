@@ -12,9 +12,15 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
+@SequenceGenerator(
+        name = "Team_Sequence_Generator", // generator 이름
+        sequenceName = "Team_Seq", // 매핑할 db 시퀀스 이름,
+        initialValue = 1,
+        allocationSize = 100
+)
 public class Team {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Team_Seq")
     @Column(name = "team_id", nullable = false)
     private Long id;
 

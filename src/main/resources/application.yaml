@@ -2,7 +2,12 @@ spring:
   jpa:
     properties:
       hibernate:
-        default_batch_fetch_size: 100
+        generate_statistics: true
+        default_batch_fetch_size: 100000
+        order_inserts: true
+        jdbc:
+          batch_size: 100000
+
     hibernate:
       ddl-auto: create
       naming:
@@ -31,3 +36,7 @@ spring:
 
 server:
   port: 80
+
+
+#logging:
+#  level: debug

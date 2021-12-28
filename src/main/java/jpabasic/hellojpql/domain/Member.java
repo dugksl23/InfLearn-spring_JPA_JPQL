@@ -13,9 +13,16 @@ import java.util.List;
 @ToString
 @NamedQuery(name = "Member.findByTeam",
         query = "select m from Member m where m.team = :team")
+@SequenceGenerator(
+        name = "Member_Sequence_Generator", // generator 이름
+        sequenceName = "Member_Seq", // 매핑할 db 시퀀스 이름,
+        initialValue = 1,
+        allocationSize = 1
+)
 public class Member {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Member_Sequence_Generator")
     @Column(name = "member_id", nullable = false)
     private Long id;
     private String name;
