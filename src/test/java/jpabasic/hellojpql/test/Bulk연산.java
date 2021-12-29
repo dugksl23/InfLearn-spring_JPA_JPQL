@@ -6,6 +6,7 @@ import jpabasic.hellojpql.domain.Team;
 import jpabasic.hellojpql.repository.MemberRepository;
 import jpabasic.hellojpql.repository.TeamRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,6 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.util.StopWatch;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -44,7 +44,7 @@ public class Bulk연산 {
         this.teamRepository = teamRepository;
     }
 
-    //    @BeforeEach
+    @BeforeEach
     void insertDummy() {
 
         Team team1 = Team.builder().name("team1").build();
@@ -52,11 +52,13 @@ public class Bulk연산 {
 
         Member member = new Member();
         member.setName("member1");
+        member.setAge(20);
         member.entryTeam(team1);
 
         Member member2 = new Member();
-        member.setName("member2");
-        member.entryTeam(team1);
+        member2.setName("member2");
+        member2.setAge(20);
+        member2.entryTeam(team1);
 
         memberRepository.saveAll(Arrays.asList(member, member2));
 
@@ -77,14 +79,28 @@ public class Bulk연산 {
     }
 
     @Test
+    @Transactional
+    void bulkDelete() {
+
+        String query = "delete from Member m where m.age = :age";
+        List<Member> resultList = em.createQuery("select m from Member m where m.age = :age").setParameter("age", 20).getResultList();
+        System.out.println("resultList = " + resultList.size());
+
+        int age = em.createQuery(query)
+                .setParameter("age", 20)
+                .executeUpdate();
+
+        System.out.println("delete age : " + age);
+
+    }
+
+
+    @Test
     @Rollback(value = false)
     @Transactional
     void bulkInsert() {
 
-//        StopWatch stopWatch = new StopWatch();
-//        stopWatch.start();
         List<Member> members = new ArrayList<>();
-        //3_000_000
         for (int i = 0; i < 3_000_000; i++) {
             Member member = new Member();
             member.setName("member" + i);
@@ -109,15 +125,28 @@ public class Bulk연산 {
                     public int getBatchSize() {
                         return members.size();
                     }
-                });
-
-
-//        memberRepository.saveAll(members);
-//        members.forEach(member -> em.persist(member));
-//        em.flush();
-//        em.clear();
+                }
+        );
 
     }
 
+    @Test
+    @Rollback(value = false)
+    @Transactional
+    void jdbcTemplateAndPersistence() {
+
+        int i = em.createQuery("update Member m set m.age = :age where m.id = :id")
+                .setParameter("age", 30)
+                .setParameter("id", 1l)
+                .executeUpdate();
+        System.out.println("size = " + i);
+
+        // 영속성 컨텍스트와 DB 동기화를 위해, 영컨 초기화
+        em.clear();
+
+        Member member = em.find(Member.class, 1l);
+        System.out.println("member = " + member.toString());
+
+    }
 
 }
